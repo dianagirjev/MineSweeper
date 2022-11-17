@@ -3,9 +3,10 @@
     background-color: azure;
     border-radius: 30px;
     margin-top: 2%;
+    padding-bottom: 20px;
 }
 h1, h3, h4 {
-    margin: 20px;
+    margin: 10px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 h1 {
@@ -21,8 +22,13 @@ h4 {
 table {
     border: 5px solid black;
     border-collapse: collapse;
-    background-color: rgb(6, 110, 110); 
+    font-size: 25px;
+    font-weight: bold;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     margin: 20px;
+}
+.tableData {
+    background-color: rgb(31, 137, 180);
 }
 td {
     border: 3px solid black;
@@ -33,4 +39,10 @@ td {
 .center {
     margin-left: auto;
     margin-right: auto;
-  }
+}
+.container > .btn.btn-outline-dark {
+    padding: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    border: 3px solid black;
+}
