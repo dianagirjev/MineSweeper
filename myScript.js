@@ -13,8 +13,8 @@ function createTable() {
             let cell = document.createElement("td");
             cell.className = "tableData";
             cell.id = "cell" + "[" + i + "]" + "[" + j + "]";
-            cell.addEventListener("click", () => checkMines(i, j));
-            cell.addEventListener("contextmenu", (event) => addMineFlag(event, i, j))
+            cell.addEventListener("click", () => checkCellValue(i, j));
+            cell.addEventListener("contextmenu", (event) => addOrRemoveMineFlag(event, i, j))
             tableRow.appendChild(cell);
         }
         table.appendChild(tableRow);
@@ -36,7 +36,7 @@ function createMinesAndNumbers() {
     }
 
     while (mineArrayPosition.length < mines) {
-        let randomPosition = Math.floor(Math.random() * (maxRowCol * maxRowCol));
+        let randomPosition = Math.floor(Math.random() * 90);
         if (mineArrayPosition.includes(randomPosition) == false && randomPosition % 10 != 9) {
             mineArrayPosition.push(randomPosition);
             matrixCells[Math.floor(randomPosition / 10)][randomPosition % 10] = "x";
@@ -45,8 +45,7 @@ function createMinesAndNumbers() {
 
     for (let i = 0; i < maxRowCol; ++i) {
         for (let j = 0; j < maxRowCol; ++j) {
-            let matrixValue = matrixCells[i][j];
-            if (matrixValue == "x") {
+            if (matrixCells[i][j] == "x") {
                 if (i - 1 >= 0 && j - 1 >= 0 && matrixCells[i - 1][j - 1] != "x") {
                     ++matrixCells[i - 1][j - 1];
                 }
@@ -90,7 +89,7 @@ let i_j_CoordinatesFlag = [];
 let queque = [];
 
 
-function addMineFlag(event, i, j) {
+function addOrRemoveMineFlag(event, i, j) {
     event.preventDefault();
     let cell = document.getElementById("cell" + "[" + i + "]" + "[" + j + "]");
     if (counterOfPossibleMines > 0 && i_j_CoordinatesFlag.includes(i * 10 + j) == false) {
@@ -105,7 +104,7 @@ function addMineFlag(event, i, j) {
     document.getElementById("nrMinesHeader").innerText = "You should avoid: " + counterOfPossibleMines + " MINES!";
 }
 
-function checkMines(i, j) {
+function checkCellValue(i, j) {
     let cell = document.getElementById("cell" + "[" + i + "]" + "[" + j + "]");
     if (matrixCells[i][j] == 'x') {
         for (let i = 0; i < maxRowCol; ++i) {
@@ -119,7 +118,7 @@ function checkMines(i, j) {
         checkWonOrLostGame("lost");
     } else if (matrixCells[i][j] == ""){
         queque.push(i * 10 + j);
-        displayNearSpacesAndNumbers();
+        displayEmptyCellsAndNumbers();
     } else {
         ++nrOfNoMineCells;
         cell.innerHTML = matrixCells[i][j];
@@ -133,7 +132,7 @@ function checkMines(i, j) {
 let displayedCells = [];
 let neighbors;
 
-function displayNearSpacesAndNumbers() {
+function displayEmptyCellsAndNumbers() {
     while (queque.length > 0) {
         let i = Math.floor(queque[0] / 10);
         let j = queque[0] % 10;
@@ -190,7 +189,7 @@ function checkWonOrLostGame(message) {
     if (message == "lost") {
         resetButton.innerHTML = "You lost the Game. Click here to play again.";
     } else {
-        resetButton.innerHTML = "You win the Game. Click here to play again.";
+        resetButton.innerHTML = "You won the Game. Click here to play again.";
     }
     resetButton.addEventListener("click", () => window.location.reload());
     container.appendChild(resetButton);
