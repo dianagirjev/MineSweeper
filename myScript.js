@@ -95,7 +95,6 @@ function addOrRemoveMineFlag(event, i, j) {
         cell.style.backgroundImage = 'none';
     }
     nrMinesHeader.innerText = "You should avoid: " + counterOfPossibleMines + " MINES!";
-    console.log(i_j_CoordinatesFlag);
 }
 
 function checkCellValue(i, j) {
@@ -115,8 +114,6 @@ function checkCellValue(i, j) {
         displayEmptyCellsAndNumbers();
     } else {
         ++nrOfNoMineCells;
-        console.log(nrOfNoMineCells);
-        console.log(maxNoMineCells);
         cell.innerHTML = matrixCells[i][j];
         cell.style.backgroundColor = "rgb(78, 197, 244)";
         if (nrOfNoMineCells == maxNoMineCells) {
