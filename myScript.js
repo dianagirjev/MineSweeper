@@ -1,15 +1,39 @@
-let mines = 10;
-let maxRowCol = 9;
+let mines;
+let maxRowCol;
+let nrMinesHeader;
+let maxNoMineCells;
+let maxRowColInput;
+let maxRowColHeader;
+let maxRowColButton;
+let matrixCells = [];
 let nrOfNoMineCells = 0;
-let maxMineCells = 71;
+let counterOfPossibleMines;
 let container = document.getElementById("container");
 let table = document.createElement("table");
 
-function createTable() {
+function askUserTableDimension() {
+    nrMinesHeader = document.getElementById("nrMinesHeader");
+    maxRowColHeader = document.getElementById("maxRowColHeader");
+    maxRowColInput = document.getElementById("maxRowColInput");
+    maxRowColButton = document.getElementById("maxRowColButton");
+    maxRowColButton.addEventListener("click", () => createTableandMatrix());
+}
+
+function createTableandMatrix() {
+    maxRowCol = maxRowColInput.value;
+    mines = maxRowCol;
+    maxNoMineCells = maxRowCol * maxRowCol - mines;
+    counterOfPossibleMines = mines;
+    maxRowColButton.style.display = "none";
+    maxRowColInput.style.display = "none";
+    maxRowColHeader.innerHTML = "Click on any cell in order to start the game.";
+    nrMinesHeader.innerHTML = "You should avoid: " + mines + " MINES!";
     table.className = "center";
     for (let i = 0; i < maxRowCol; ++i) {
+        matrixCells[i] = [];
         let tableRow = document.createElement("tr");
         for (let j = 0; j < maxRowCol; ++j) {
+            matrixCells[i][j] = 0;
             let cell = document.createElement("td");
             cell.className = "tableData";
             cell.id = "cell" + "[" + i + "]" + "[" + j + "]";
@@ -24,66 +48,35 @@ function createTable() {
 }
 
 let counter = 0;
-let matrixCells = [];
-let mineArrayPosition = []
+let randomPositionIArray = []
+let randomPositionJArray = []
+let neighbors;
 
 function createMinesAndNumbers() {
-    for (let i = 0; i < maxRowCol; ++i) {
-        matrixCells[i] = [];
-        for (let j = 0; j < maxRowCol; ++j) {
-            matrixCells[i][j] = 0;
-        }
-    }
-
-    while (mineArrayPosition.length < mines) {
-        let randomPosition = Math.floor(Math.random() * 90);
-        if (mineArrayPosition.includes(randomPosition) == false && randomPosition % 10 != 9) {
-            mineArrayPosition.push(randomPosition);
-            matrixCells[Math.floor(randomPosition / 10)][randomPosition % 10] = "x";
-        }
+    while (randomPositionIArray.length < mines) {
+        let randomPositionI = Math.floor(Math.random() * maxRowCol);
+        let randomPositionJ = Math.floor(Math.random() * maxRowCol);
+        if (randomPositionIArray.includes(randomPositionI) == false) {
+            randomPositionIArray.push(randomPositionI);
+            randomPositionJArray.push(randomPositionJ);
+            matrixCells[randomPositionI][randomPositionJ] = "x";
+        }   
     }
 
     for (let i = 0; i < maxRowCol; ++i) {
         for (let j = 0; j < maxRowCol; ++j) {
             if (matrixCells[i][j] == "x") {
-                if (i - 1 >= 0 && j - 1 >= 0 && matrixCells[i - 1][j - 1] != "x") {
-                    ++matrixCells[i - 1][j - 1];
-                }
-                if (i - 1 >= 0 && matrixCells[i - 1][j] != "x") {
-                    ++matrixCells[i - 1][j];
-                }
-                if (i - 1 >= 0 && j + 1 <= 8 && matrixCells[i - 1][j + 1] != "x") {
-                    ++matrixCells[i - 1][j + 1];
-                }
-                if (j - 1 >= 0 && matrixCells[i][j - 1] != "x") {
-                    ++matrixCells[i][j - 1];
-                }
-                if (i + 1 <= 8 && j - 1 >= 0 && matrixCells[i + 1][j - 1] != "x") {
-                    ++matrixCells[i + 1][j - 1];
-                }
-                if (i + 1 <= 8 && matrixCells[i + 1][j] != "x") {
-                    ++matrixCells[i + 1][j];
-                }
-                if (j + 1 <= 8 && matrixCells[i][j + 1]!= "x") {
-                    ++matrixCells[i][j + 1];
-                }
-                if (i + 1 <= 8 && j + 1 <= 8 && matrixCells[i + 1][j + 1] != "x") {
-                    ++matrixCells[i + 1][j + 1];
+                findNeighbors(i, j);
+                for (let k = 0; k < neighbors.length; ++k) {
+                    if (matrixCells[Math.floor(neighbors[k] / 100)][neighbors[k] % 100] != "x") {
+                        ++matrixCells[Math.floor(neighbors[k] / 100)][neighbors[k] % 100];
+                    }
                 }
             }
         }
     }  
-    for (let i = 0; i < maxRowCol; ++i) {
-        for (let j = 0; j < maxRowCol; ++j) {
-            if (matrixCells[i][j] == 0) {
-                matrixCells[i][j] = "";
-            }
-        }
-    }
-    console.log(matrixCells);
 }
 
-let counterOfPossibleMines = 10;
 let arrayOfFlags = [];
 let i_j_CoordinatesFlag = [];
 let queque = [];
@@ -92,16 +85,17 @@ let queque = [];
 function addOrRemoveMineFlag(event, i, j) {
     event.preventDefault();
     let cell = document.getElementById("cell" + "[" + i + "]" + "[" + j + "]");
-    if (counterOfPossibleMines > 0 && i_j_CoordinatesFlag.includes(i * 10 + j) == false) {
-        i_j_CoordinatesFlag.push( i * 10 + j);
+    if (counterOfPossibleMines > 0 && i_j_CoordinatesFlag.includes(i * 100 + j) == false) {
+        i_j_CoordinatesFlag.push( i * 100 + j);
         --counterOfPossibleMines;
         cell.style.backgroundImage = "url('images/flag.png')";
-    } else if (i_j_CoordinatesFlag.includes(i * 10 + j) == true) {
-        i_j_CoordinatesFlag.splice(i_j_CoordinatesFlag.indexOf(i * 10 + j), 1);
+    } else if (i_j_CoordinatesFlag.includes(i * 100 + j) == true) {
+        i_j_CoordinatesFlag.splice(i_j_CoordinatesFlag.indexOf(i * 100 + j), 1);
         ++counterOfPossibleMines;
         cell.style.backgroundImage = 'none';
     }
-    document.getElementById("nrMinesHeader").innerText = "You should avoid: " + counterOfPossibleMines + " MINES!";
+    nrMinesHeader.innerText = "You should avoid: " + counterOfPossibleMines + " MINES!";
+    console.log(i_j_CoordinatesFlag);
 }
 
 function checkCellValue(i, j) {
@@ -116,30 +110,31 @@ function checkCellValue(i, j) {
             }
         }
         checkWonOrLostGame("lost");
-    } else if (matrixCells[i][j] == ""){
-        queque.push(i * 10 + j);
+    } else if (matrixCells[i][j] == 0){
+        queque.push(i * 100 + j);
         displayEmptyCellsAndNumbers();
     } else {
         ++nrOfNoMineCells;
+        console.log(nrOfNoMineCells);
+        console.log(maxNoMineCells);
         cell.innerHTML = matrixCells[i][j];
         cell.style.backgroundColor = "rgb(78, 197, 244)";
-        if (nrOfNoMineCells == maxMineCells) {
+        if (nrOfNoMineCells == maxNoMineCells) {
             checkWonOrLostGame("won");
         }
     }
 }
 
 let displayedCells = [];
-let neighbors;
 
 function displayEmptyCellsAndNumbers() {
     while (queque.length > 0) {
-        let i = Math.floor(queque[0] / 10);
-        let j = queque[0] % 10;
+        let i = Math.floor(queque[0] / 100);
+        let j = queque[0] % 100;
         displayedCells.push(queque[0]);
         queque.shift();
         let cell = document.getElementById("cell" + "[" + i + "]" + "[" + j + "]");
-        if (matrixCells[i][j] == "") {
+        if (matrixCells[i][j] == 0) {
             cell.innerHTML = "";
             findNeighbors(i, j);
             for (let k = 0; k < neighbors.length; ++k) {
@@ -157,29 +152,14 @@ function displayEmptyCellsAndNumbers() {
 
 function findNeighbors(i, j) {
     neighbors = [];
-    if (i - 1 >= 0 && j - 1 >= 0) {
-        neighbors.push((i - 1) * 10 + j - 1);
-    }
-    if (i - 1 >= 0) {
-        neighbors.push((i - 1) * 10 + j);
-    }
-    if (i - 1 >= 0 && j + 1 <= 8) {
-        neighbors.push((i - 1) * 10 + j + 1);
-    }
-    if (j - 1 >= 0) {
-        neighbors.push(i * 10 + j - 1);
-    }
-    if (i + 1 <= 8 && j - 1 >= 0) {
-        neighbors.push((i + 1) * 10 + j - 1);
-    }
-    if (i + 1 <= 8) {
-        neighbors.push((i + 1) * 10 + j);
-    }
-    if (j + 1 <= 8) {
-        neighbors.push(i * 10 + j + 1);
-    }
-    if (i + 1 <= 8 && j + 1 <= 8) {
-        neighbors.push((i + 1) * 10 + j + 1);
+    for (let indexI = i - 1; indexI <= i + 1; ++indexI) {
+        for (let indexJ = j - 1; indexJ <= j + 1; ++indexJ) {
+            if (indexI >= 0 && indexI <= maxRowCol - 1 && indexJ >= 0 && indexJ <= maxRowCol - 1) {
+                if (!(indexI == i && indexJ == j)) {
+                    neighbors.push(indexI * 100 + indexJ);
+                }
+            }
+        }
     }
 }
 
@@ -195,4 +175,4 @@ function checkWonOrLostGame(message) {
     container.appendChild(resetButton);
 }
 
-createTable();
+askUserTableDimension();

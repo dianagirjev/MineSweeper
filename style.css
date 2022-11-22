@@ -46,3 +46,24 @@ td {
     font-weight: bold;
     border: 3px solid black;
 }
+.form-control, #maxRowColButton {
+    background: transparent;
+    font-weight: bold;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: black;
+    border: 3px solid black;
+    font-size: 19px;
+    margin: 10px;
+    height: 35px;
+}
+.form-control {
+    width: 4%;
+}
+#maxRowColButton {
+    padding: 2px;
+    width: 6%;
+}
+.tableSizeDiv, .nrMinesDiv {
+    display: flex;
+    justify-content: center;
+}

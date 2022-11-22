@@ -13,8 +13,12 @@
 <body>
     <div class="container text-center" id="container">
         <h1>MineSweeper</h1>
-        <h4>Click on any cell in order to start the game.</h4>
-        <h3 id="nrMinesHeader">You should avoid: 10 MINES!</h3>
+        <div class="tableSizeDiv">
+            <h4 id="maxRowColHeader">Please input a number for table size.</h4>
+            <input type="text" class="form-control" id="maxRowColInput" style="display: block;">
+            <button class="btn btn-outline-dark" id="maxRowColButton" style="display: block;">Add</button>
+        </div>
+        <h3 id="nrMinesHeader">You should avoid: ? MINES!</h3>
     </div>
 
     <script src="myScript.js"></script>
